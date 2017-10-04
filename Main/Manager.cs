@@ -9,14 +9,14 @@ namespace GameOfLive
     class Manager
     {
         private const float timebetweenFrame = 1 / 60f * 1000f;
-        private List<Cell> aliveCells = new List<Cell>();
         public Manager(uint width, uint height, string name)
         {
 
             Window = (new RenderWindow(new VideoMode(width, height), name));
             Screen = new Screen();
-            Screen.DrawLines();
-            Screen.AddCells();
+            Board = new Board();
+            //Board.AddQuads(Screen);
+           // Screen.DrawLines();
             Mouse m = new Mouse();
             Window.SetFramerateLimit(30);
 
@@ -31,6 +31,11 @@ namespace GameOfLive
             get;
             set;
         }
+        private Board Board
+        {
+            get;
+            set;
+        }
 
         public void Draw() { }
         public void Update()
@@ -38,27 +43,29 @@ namespace GameOfLive
 
             int Mx = Mouse.GetPosition(Window).X;
             int My = Mouse.GetPosition(Window).Y;
-           
+
             if (Mouse.IsButtonPressed(Mouse.Button.Left))
-                Screen.SetCell(Mx, My);
-            if(Mouse.IsButtonPressed(Mouse.Button.Right))
-           Screen.Update();
+                Screen.SetCell(Mx, My,Board);
+            if (Mouse.IsButtonPressed(Mouse.Button.Right))
+                Screen.Update();
 
         }
         public void Run()
         {
             Window.Closed += (object sender, System.EventArgs e) => Window.Close();
-                   
+
             while (Window.IsOpen())
             {
                 Window.DispatchEvents();
                 Window.Clear();
 
                 Update();
-                foreach (Cell cell in Screen.Cells)
-                    Window.Draw(cell.cell);
-                foreach (VertexArray va in Screen.Lines)
-                    Window.Draw(va);
+                //Draw Cells
+               Screen.DrawCells(Window, Board);
+                //Draw Lines
+               // foreach (VertexArray va in Screen.Lines)
+                //    Window.Draw(va);
+                    
 
                 Window.Display();
             }
